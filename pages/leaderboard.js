@@ -61,7 +61,6 @@ setTeams(sorted);
       <tr className="border-b bg-gray-100 dark:bg-gray-800">
         <th className="p-2 text-left">Pos</th>
         <th className="p-2 text-left">Team</th>
-        <th className="p-2 text-left">Played</th>
         <th className="p-2 text-left">Goals</th>
       </tr>
     </thead>
@@ -78,10 +77,6 @@ setTeams(sorted);
 
           <td className="p-2">
             {team.username}
-          </td>
-
-          <td className="p-2">
-            {team.players?.length || 5}
           </td>
 
           <td className="p-2 font-bold">
