@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
 
-    const TOP_TEAMS = [2, 3, 6, 10, 13]; // France, Brazil, Spain, England, Argentina
+    const TOP_TEAMS = [2, 3, 6, 10, 13, 16]; // France, Brazil, Spain, England, Argentina
 
     let allPlayers = [];
     let teamsSet = new Set();
