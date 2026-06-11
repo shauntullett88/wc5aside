@@ -42,9 +42,10 @@ export default async function handler(req, res) {
       const eventsData = await eventsRes.json();
 
       for (const event of eventsData.response || []) {
+console.log('GOAL EVENT:', event);
 
         if (event.type === 'Goal' && event.player) {
-
+console.log('SCORER:', event.player.name, event.player.id);
           const playerId = event.player.id;
           const eventTime = event.time.elapsed;
 
