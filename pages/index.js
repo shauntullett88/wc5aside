@@ -58,8 +58,13 @@ export default function SelectionPage() {
       const res  = await fetch('/api/players');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load players');
-      setAllPlayers(data.players || []);
-      setTeams(data.teams || []);
+      const players = data.players || [];
+
+setAllPlayers(players);
+
+// ✅ BUILD TEAMS FROM PLAYERS
+const uniqueTeams = [...new Set(players.map(p => p.team))];
+setTeams(uniqueTeams);
     } catch (err) {
       setLoadError(err.message);
     } finally {
