@@ -2,7 +2,18 @@ import { supabase } from '../../lib/supabase';
 
 export default async function handler(req, res) {
   try {
-    const response = await fetch(
+
+    // ✅ Get all teams
+    const { data: teams } = await supabase.from('teams').select('*');
+
+    if (!teams) {
+      return res.status(500).json({ error: 'No teams found' });
+    }
+
+    let goalsAdded = 0;
+
+    // ✅ Fetch fixtures
+    const fixturesRes = await fetch(
       `https://v3.football.api-sports.io/fixtures?league=1&season=2026`,
       {
         headers: {
@@ -12,21 +23,55 @@ export default async function handler(req, res) {
       }
     );
 
-    const data = await response.json();
+    const fixturesData = await fixturesRes.json();
 
-    let goalsAdded = 0;
+    for (const fixture of fixturesData.response || []) {
+      const fixtureId = fixture.fixture.id;
 
-    const { data: teams } = await supabase.from('teams').select('*');
+      // ✅ Fetch events for this fixture
+      const eventsRes = await fetch(
+        `https://v3.football.api-sports.io/fixtures/events?fixture=${fixtureId}`,
+        {
+          headers: {
+            'x-apisports-key': process.env.API_FOOTBALL_KEY,
+            'x-apisports-host': process.env.API_FOOTBALL_HOST,
+          },
+        }
+      );
 
-    for (const fixture of data.response || []) {
-      const events = fixture.events || [];
+      const eventsData = await eventsRes.json();
 
-      for (const event of events) {
+      for (const event of eventsData.response || []) {
+
         if (event.type === 'Goal' && event.player) {
-          const scorerId = event.player.id;
 
+          const playerId = event.player.id;
+          const eventTime = event.time.elapsed;
+
+          // ✅ CHECK if already processed
+          const { data: existingGoal } = await supabase
+            .from('processed_goals')
+            .select('*')
+            .eq('fixture_id', fixtureId)
+            .eq('player_id', playerId)
+            .eq('event_time', eventTime)
+            .maybeSingle();
+
+          if (existingGoal) continue; // ✅ skip duplicates
+
+          // ✅ Store goal to prevent duplicates
+          await supabase.from('processed_goals').insert([
+            {
+              fixture_id: fixtureId,
+              player_id: playerId,
+              event_time: eventTime,
+            }
+          ]);
+
+          // ✅ Update teams that have this player
           for (const team of teams) {
-            if (team.player_ids.includes(scorerId)) {
+            if (team.player_ids.includes(playerId)) {
+
               await supabase
                 .from('teams')
                 .update({
@@ -41,9 +86,14 @@ export default async function handler(req, res) {
       }
     }
 
-    return res.status(200).json({ success: true, goalsAdded });
+    return res.status(200).json({
+      success: true,
+      goalsAdded,
+    });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      error: err.message
+    });
   }
 }
