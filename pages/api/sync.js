@@ -46,9 +46,15 @@ let debug = [];
 debug.push({ event });
 
         if (event.type === 'Goal' && event.player) {
-debug.push({
-          const playerId = event.player.id;
-          const eventTime = event.time.elapsed;
+
+  const playerId = event.player.id;
+  const eventTime = event.time.elapsed;
+
+  debug.push({
+    scorer: event.player.name,
+    playerId: playerId
+  });
+
 
           // ✅ CHECK if already processed
           const { data: existingGoal } = await supabase
