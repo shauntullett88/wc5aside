@@ -1,44 +1,56 @@
-/**
- * pages/api/players.js
- * Simple version without database
- */
+export default async function handler(req, res) {
+  try {
 
-export default function handler(req, res) {
-  const players = [
-    { id: 1, name: "Kylian Mbappe", team: "France", position: "Forward", goals: 0 },
-    { id: 2, name: "Harry Kane", team: "England", position: "Forward", goals: 0 },
-    { id: 3, name: "Lionel Messi", team: "Argentina", position: "Forward", goals: 0 },
-    { id: 4, name: "Kevin De Bruyne", team: "Belgium", position: "Midfielder", goals: 0 },
-    { id: 5, name: "Jude Bellingham", team: "England", position: "Midfielder", goals: 0 }
-  ];
+    const TOP_TEAMS = [2, 3, 6, 10, 13]; // France, Brazil, Spain, England, Argentina
 
-  const { position, team, search } = req.query;
+    let allPlayers = [];
+    let teamsSet = new Set();
 
-  let filtered = players;
+    for (const teamId of TOP_TEAMS) {
 
-  // Filter by position
-  if (position && position !== 'All') {
-    filtered = filtered.filter(p =>
-      p.position.toLowerCase().includes(position.toLowerCase())
-    );
+      const response = await fetch(
+        `https://v3.football.api-sports.io/players/squads?team=${teamId}`,
+        {
+          headers: {
+            'x-apisports-key': process.env.API_FOOTBALL_KEY,
+            'x-apisports-host': process.env.API_FOOTBALL_HOST,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      const teamName = data.response[0]?.team.name;
+      const squad = data.response[0]?.players || [];
+
+      if (teamName) teamsSet.add(teamName);
+
+      for (const player of squad) {
+
+        if (
+          player.position === 'Midfielder' ||
+          player.position === 'Forward' ||
+          player.position === 'Attacker'
+        ) {
+          allPlayers.push({
+            id: player.id,
+            name: player.name,
+            team: teamName,
+            position: player.position,
+            goals: 0
+          });
+        }
+      }
+    }
+
+    return res.status(200).json({
+      players: allPlayers,
+      teams: Array.from(teamsSet),
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message
+    });
   }
-
-  // Filter by team
-  if (team && team !== 'All') {
-    filtered = filtered.filter(p =>
-      p.team.toLowerCase() === team.toLowerCase()
-    );
-  }
-
-  // Search by name
-  if (search && search.trim()) {
-    const q = search.toLowerCase();
-    filtered = filtered.filter(p =>
-      p.name.toLowerCase().includes(q)
-    );
-  }
-
-  const teams = [...new Set(players.map(p => p.team))];
-
-  res.status(200).json({ players: filtered, teams });
 }
