@@ -1,37 +1,21 @@
 export default async function handler(req, res) {
   try {
 
-    // ✅ Top 5 teams (example IDs)
-    const TOP_TEAMS = [2, 3, 6, 10, 16]; // France, Brazil, Spain, England, Mexico
+    // ✅ Correct team IDs
+    const TEAMS = [
+      { id: 2, name: "France" },
+      { id: 10, name: "England" },
+      { id: 3, name: "Brazil" },
+      { id: 13, name: "Argentina" },
+      { id: 6, name: "Spain" }
+    ];
 
-    let playersMap = {};
+    let players = [];
 
-    // ✅ Get recent matches (reliable source of players)
-    const fixturesRes = await fetch(
-      `https://v3.football.api-sports.io/fixtures?last=20`,
-      {
-        headers: {
-          'x-apisports-key': process.env.API_FOOTBALL_KEY,
-          'x-apisports-host': process.env.API_FOOTBALL_HOST,
-        },
-      }
-    );
+    for (const team of TEAMS) {
 
-    const fixturesData = await fixturesRes.json();
-
-    for (const fixture of fixturesData.response || []) {
-
-      const teams = fixture.teams;
-
-      // ✅ Only include top teams
-      if (
-        !TOP_TEAMS.includes(teams.home.id) &&
-        !TOP_TEAMS.includes(teams.away.id)
-      ) continue;
-
-      // ✅ Get events (this gives us real players)
-      const eventsRes = await fetch(
-        `https://v3.football.api-sports.io/fixtures/events?fixture=${fixture.fixture.id}`,
+      const response = await fetch(
+        `https://v3.football.api-sports.io/players/squads?team=${team.id}`,
         {
           headers: {
             'x-apisports-key': process.env.API_FOOTBALL_KEY,
@@ -40,28 +24,24 @@ export default async function handler(req, res) {
         }
       );
 
-      const eventsData = await eventsRes.json();
+      const data = await response.json();
 
-      for (const event of eventsData.response || []) {
+      const squad = data.response?.[0]?.players || [];
 
-        if (!event.player) continue;
+      // ✅ Only add if squad exists
+      if (squad.length > 0) {
 
-        const playerId = event.player.id;
-        const playerName = event.player.name;
+        for (const player of squad) {
 
-        // ✅ Save unique players
-        if (!playersMap[playerId]) {
-          playersMap[playerId] = {
-            id: playerId,
-            name: playerName,
-            team: event.team.name,
-            position: 'Attacker', // fallback (API doesn't give position here)
-          };
+          players.push({
+            id: player.id,
+            name: player.name,
+            team: team.name,
+            position: player.position
+          });
         }
       }
     }
-
-    const players = Object.values(playersMap);
 
     return res.status(200).json({ players });
 
