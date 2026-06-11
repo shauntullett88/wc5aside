@@ -46,7 +46,7 @@ let debug = [];
 debug.push({ event });
 
         if (event.type === 'Goal' && event.player) {
-console.log('SCORER:', event.player.name, event.player.id);
+debug.push({
           const playerId = event.player.id;
           const eventTime = event.time.elapsed;
 
@@ -91,6 +91,7 @@ console.log('SCORER:', event.player.name, event.player.id);
     return res.status(200).json({
       success: true,
       goalsAdded,
+      debug,
     });
 
   } catch (err) {
