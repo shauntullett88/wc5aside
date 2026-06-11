@@ -70,7 +70,7 @@ export default async function handler(req, res) {
 
           // ✅ Update teams that have this player
           for (const team of teams) {
-            if (team.player_ids.includes(playerId)) {
+            if (team.player_ids.map(id => Number(id)).includes(playerId)) {
 
               await supabase
                 .from('teams')
