@@ -10,7 +10,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'No teams found' });
     }
 
-    let goalsAdded = 0;
+let goalsAdded = 0;
+let debug = [];
 
     // ✅ Fetch fixtures
     const fixturesRes = await fetch(
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
       const eventsData = await eventsRes.json();
 
       for (const event of eventsData.response || []) {
-console.log('GOAL EVENT:', event);
+debug.push({ event });
 
         if (event.type === 'Goal' && event.player) {
 console.log('SCORER:', event.player.name, event.player.id);
