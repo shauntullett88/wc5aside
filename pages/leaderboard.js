@@ -21,7 +21,10 @@ export default function LeaderboardPage() {
     try {
       const res = await fetch('/api/teams');
       const data = await res.json();
-      const sorted = (data.teams || []).sort((a, b) => const sorted = (data.teams || []).sort((a, b) =>
+      const sorted = (data.teams || []).sort((a, b) =>
+  ((b.totalGoals || 0) + (b.totalAssists || 0)) -
+  ((a.totalGoals || 0) + (a.totalAssists || 0))
+);
   ((b.totalGoals || 0) + (b.totalAssists || 0)) -
   ((a.totalGoals || 0) + (a.totalAssists || 0))
 );
