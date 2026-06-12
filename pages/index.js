@@ -208,7 +208,7 @@ function togglePlayer(player) {
                   WC5<span className="text-pitch-500">Aside</span>
                 </h1>
                 <p className={`text-lg ${dark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Pick 5 players. Score the most goals. Win it all.
+                  Pick 6 players. Score goals + assists. Win it all.
                 </p>
                 <div className={`mt-4 inline-flex items-center gap-2 text-sm px-3 py-1 rounded-full ${
                   dark ? 'bg-white/5 text-slate-400' : 'bg-slate-100 text-slate-500'
@@ -256,7 +256,8 @@ function togglePlayer(player) {
               <div className={`mt-6 ${card} p-5 space-y-3`}>
                 <h3 className={`font-semibold text-sm ${dark ? 'text-slate-300' : 'text-slate-700'}`}>How it works</h3>
                 {[
-                  ['🎯', 'Pick exactly 5 players — midfielders & forwards only'],
+                  ['🎯', 'Pick exactly 6 players — 3 midfielders & 3 forwards'],
+                  ['⚖️', 'Max 2 players allowed per national team'],
                   ['🔒', 'Your team is locked permanently after confirmation'],
                   ['⚽', 'Your score = total goals your players score at the World Cup'],
                   ['🚫', 'Own goals NEVER count'],

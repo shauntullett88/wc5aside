@@ -21,7 +21,11 @@ export default function LeaderboardPage() {
     try {
       const res = await fetch('/api/teams');
       const data = await res.json();
-      const sorted = (data.teams || []).sort((a, b) => (b.totalGoals || 0) - (a.totalGoals || 0));
+      const sorted = (data.teams || []).sort((a, b) => const sorted = (data.teams || []).sort((a, b) =>
+  ((b.totalGoals || 0) + (b.totalAssists || 0)) -
+  ((a.totalGoals || 0) + (a.totalAssists || 0))
+);
+
 setTeams(sorted);
     } catch (err) {
       setError('Failed to load teams');
@@ -44,7 +48,8 @@ setTeams(sorted);
         <Navbar />
 
         <main className="max-w-4xl mx-auto p-6">
-          <h1 className="text-2xl font-bold mb-4">🏆 Leaderboard</h1>
+          <h1 className="text-2xl font-bold mb-4">🏆 Leaderboard (Goals + Assists)
+</h1>
 
           {loading && <p>Loading...</p>}
 
@@ -62,6 +67,8 @@ setTeams(sorted);
         <th className="p-2 text-left">Pos</th>
         <th className="p-2 text-left">Team</th>
         <th className="p-2 text-left">Goals</th>
+        <th className="p-2 text-left">Assists</th>
+        <th className="p-2 text-left">Total</th>
       </tr>
     </thead>
 
@@ -79,9 +86,12 @@ setTeams(sorted);
             {team.username}
           </td>
 
-          <td className="p-2 font-bold">
-            {team.totalGoals || 0}
-          </td>
+          <td className="p-2">{team.totalGoals || 0}</td>
+<td className="p-2">{team.totalAssists || 0}</td>
+<td className="p-2 font-bold">
+  {(team.totalGoals || 0) + (team.totalAssists || 0)}
+</td>
+
         </tr>
       ))}
     </tbody>
