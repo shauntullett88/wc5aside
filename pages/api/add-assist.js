@@ -59,8 +59,11 @@ export default async function handler(req, res) {
       const { error: updateError } = await supabase
         .from('player_stats')
         .update({
-          assists: (existingPlayer.assists || 0) + 1
-        })
+  assists: (existingPlayer.assists || 0) + 1,
+  name,
+  team,
+  position
+})
         .eq('id', String(playerId));
 
       if (updateError) {
