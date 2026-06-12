@@ -27,6 +27,7 @@ let debug = [];
     );
 
     const fixturesData = await fixturesRes.json();
+    console.log("FIXTURES RESPONSE:", fixturesData);
 
     for (const fixture of fixturesData.response || []) {
       const fixtureId = fixture.fixture.id;
