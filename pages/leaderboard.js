@@ -8,18 +8,6 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useTheme } from './_app';
 
-// ✅ Flags
-const TEAM_FLAGS = {
-  Brazil: '🇧🇷',
-  France: '🇫🇷',
-  Spain: '🇪🇸',
-  Germany: '🇩🇪',
-  Argentina: '🇦🇷',
-  England: '🏴',
-  Portugal: '🇵🇹',
-  Mexico: '🇲🇽'
-};
-
 export default function LeaderboardPage() {
   const { dark } = useTheme();
 
@@ -72,7 +60,6 @@ export default function LeaderboardPage() {
       <div className={dark ? 'bg-black text-white min-h-screen' : 'bg-white text-black min-h-screen'}>
         <Navbar />
 
-        {/* ✅ SPLIT LAYOUT */}
         <main className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* ✅ TEAM LEADERBOARD */}
@@ -151,7 +138,9 @@ export default function LeaderboardPage() {
                         }`}
                       >
                         <td className="p-2">
-                          {TEAM_FLAGS[p.team] || ''} {p.name || p.id}
+                          <span className="font-semibold">
+                            {p.name || p.id}
+                          </span>
                           {p.position ? ` (${p.position})` : ''}
                         </td>
                         <td className="p-2">{p.goals || 0}</td>
