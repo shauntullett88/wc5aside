@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
     let updates = [];
 
-    // ✅ Loop through teams and add assist if player is in team
+    // ✅ Update team assists
     for (const team of teams || []) {
       if (team.player_ids.map(id => Number(id)).includes(playerId)) {
 
@@ -40,6 +40,32 @@ export default async function handler(req, res) {
       }
     }
 
+    // ✅ NEW: update player_stats (for top players leaderboard)
+    const { data: existingPlayer } = await supabase
+      .from('player_stats')
+      .select('*')
+      .eq('id', playerId)
+      .maybeSingle();
+
+    if (existingPlayer) {
+      await supabase
+        .from('player_stats')
+        .update({
+          assists: (existingPlayer.assists || 0) + 1
+        })
+        .eq('id', playerId);
+    } else {
+      await supabase
+        .from('player_stats')
+        .insert([
+          {
+            id: playerId,
+            goals: 0,
+            assists: 1
+          }
+        ]);
+    }
+
     return res.status(200).json({
       success: true,
       updatedTeams: updates
@@ -49,4 +75,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 }
-``

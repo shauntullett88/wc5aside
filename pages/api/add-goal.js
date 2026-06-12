@@ -8,13 +8,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing playerId' });
     }
 
-    // ✅ Find teams that have this player
+    // ✅ Get all teams
     const { data: teams } = await supabase.from('teams').select('*');
 
     let updatedTeams = [];
 
+    // ✅ Update team goals
     for (const team of teams || []) {
-      if (team.player_ids.includes(playerId)) {
+      if (team.player_ids.map(id => Number(id)).includes(playerId)) {
+
         const { data } = await supabase
           .from('teams')
           .update({
@@ -26,6 +28,32 @@ export default async function handler(req, res) {
 
         updatedTeams.push(data);
       }
+    }
+
+    // ✅ NEW: update player_stats (for top players leaderboard)
+    const { data: existingPlayer } = await supabase
+      .from('player_stats')
+      .select('*')
+      .eq('id', playerId)
+      .maybeSingle();
+
+    if (existingPlayer) {
+      await supabase
+        .from('player_stats')
+        .update({
+          goals: (existingPlayer.goals || 0) + 1
+        })
+        .eq('id', playerId);
+    } else {
+      await supabase
+        .from('player_stats')
+        .insert([
+          {
+            id: playerId,
+            goals: 1,
+            assists: 0
+          }
+        ]);
     }
 
     return res.status(200).json({
