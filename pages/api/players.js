@@ -82,7 +82,7 @@ export default function handler(req, res) {
     { id: 69, name: "Neymar Junior", team: "Brazil", position: "Forward" },
     { id: 70, name: "Raphinha", team: "Brazil", position: "Forward" },
     { id: 71, name: "Rayan", team: "Brazil", position: "Forward" },
-    { id: 72, name: "Vinicius Junior", team: "Brazil", position: "Forward" }
+    { id: 72, name: "Vinicius Junior", team: "Brazil", position: "Forward" },
     { id: 73, name: "Raul Jimenez", team: "Mexico", position: "Forward" }
 
   ];
