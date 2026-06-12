@@ -5,7 +5,7 @@
  * Flow:
  *   1. User enters name → checks if already locked in
  *   2. User browses/filters/searches midfielders & forwards
- *   3. User picks exactly 6 players (no duplicates)
+ *   3. User picks exactly 6 players (no duplicate)
  *   4. Confirmation dialog: "Are you sure? You cannot change your team after locking in."
  *   5. POST /api/teams → team is locked permanently
  *   6. Display locked team summary
