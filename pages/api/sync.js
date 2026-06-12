@@ -13,6 +13,8 @@ export default async function handler(req, res) {
 let goalsAdded = 0;
 let debug = [];
 
+    console.log("API KEY:", process.env.API_FOOTBALL_KEY);
+
     // ✅ Fetch fixtures
     const fixturesRes = await fetch(
       `https://v3.football.api-sports.io/fixtures?last=5`,
