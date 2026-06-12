@@ -25,9 +25,6 @@ export default function LeaderboardPage() {
   ((b.totalGoals || 0) + (b.totalAssists || 0)) -
   ((a.totalGoals || 0) + (a.totalAssists || 0))
 );
-  ((b.totalGoals || 0) + (b.totalAssists || 0)) -
-  ((a.totalGoals || 0) + (a.totalAssists || 0))
-);
 
 setTeams(sorted);
     } catch (err) {
