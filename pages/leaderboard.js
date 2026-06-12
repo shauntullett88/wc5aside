@@ -13,8 +13,16 @@ export default function LeaderboardPage() {
 
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
+  const [allPlayers, setAllPlayers] = useState([]); // ✅ needed for teams table
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // ✅ Helper for surnames
+  function getSurname(name) {
+    if (!name) return '';
+    const parts = name.split(' ');
+    return parts[parts.length - 1];
+  }
 
   const fetchData = useCallback(async () => {
     try {
@@ -29,7 +37,7 @@ export default function LeaderboardPage() {
 
       setTeams(sortedTeams);
 
-      // ✅ Fetch players
+      // ✅ Fetch player stats (top players)
       const resPlayers = await fetch('/api/player-stats');
       const dataPlayers = await resPlayers.json();
 
@@ -39,6 +47,11 @@ export default function LeaderboardPage() {
       );
 
       setPlayers(sortedPlayers);
+
+      // ✅ ⬅️ MISSING BEFORE — fetch full player list
+      const resAllPlayers = await fetch('/api/players');
+      const dataAllPlayers = await resAllPlayers.json();
+      setAllPlayers(dataAllPlayers.players || []);
 
     } catch (err) {
       setError('Failed to load leaderboard');
@@ -154,6 +167,55 @@ export default function LeaderboardPage() {
                 </table>
               </div>
             )}
+          </div>
+
+          {/* ✅ TEAMS TABLE (NEW) */}
+          <div className="lg:col-span-2 mt-6">
+            <h2 className="text-2xl font-bold mb-4">
+              👥 Teams
+            </h2>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b bg-gray-100 dark:bg-gray-800">
+                    <th className="p-2 text-left">Name</th>
+                    <th className="p-2 text-left">MID</th>
+                    <th className="p-2 text-left">ATT</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {teams.map((team, index) => {
+                    const mids = [];
+                    const atts = [];
+
+                    (team.player_ids || []).forEach(id => {
+                      const player = allPlayers.find(p => Number(p.id) === Number(id));
+                      if (!player) return;
+
+                      const surname = getSurname(player.name);
+
+                      if (player.position === 'Midfielder') {
+                        mids.push(surname);
+                      }
+
+                      if (player.position === 'Forward') {
+                        atts.push(surname);
+                      }
+                    });
+
+                    return (
+                      <tr key={index} className="border-b">
+                        <td className="p-2 font-semibold">{team.username}</td>
+                        <td className="p-2">{mids.join(', ')}</td>
+                        <td className="p-2">{atts.join(', ')}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* ✅ BACK LINK */}
