@@ -190,7 +190,7 @@ function togglePlayer(player) {
   return (
     <>
       <Head>
-        <title>Pick Your Team — WC5Aside Fantasy</title>
+        <title>Pick Your Team — WC6Aside Fantasy</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div className={bg}>
@@ -205,7 +205,7 @@ function togglePlayer(player) {
               <div className="text-center mb-10">
                 <div className="text-5xl mb-3">⚽</div>
                 <h1 className={`text-4xl font-black mb-2 ${dark ? 'text-white' : 'text-slate-900'}`}>
-                  WC5<span className="text-pitch-500">Aside</span>
+                  WC6<span className="text-pitch-500">Aside</span>
                 </h1>
                 <p className={`text-lg ${dark ? 'text-slate-400' : 'text-slate-600'}`}>
                   Pick 6 players. Score goals + assists. Win it all.

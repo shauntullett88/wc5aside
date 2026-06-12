@@ -22,7 +22,7 @@ export default function Navbar() {
           <span className="text-2xl">⚽</span>
           <div>
             <div className={`font-black text-base leading-none tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>
-              WC5<span className="text-pitch-500">Aside</span>
+              WC6<span className="text-pitch-500">Aside</span>
             </div>
             <div className={`text-[10px] tracking-widest uppercase ${dark ? 'text-slate-500' : 'text-slate-400'}`}>
               Fantasy 2026
