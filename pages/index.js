@@ -18,7 +18,7 @@ import Navbar from '../components/Navbar';
 import PlayerCard from '../components/PlayerCard';
 import { useTheme } from './_app';
 
-const MAX_PLAYERS = 5;
+const MAX_PLAYERS = 6;
 
 const TEAM_FLAGS = {
   'Brazil':'🇧🇷','France':'🇫🇷','Spain':'🇪🇸','Germany':'🇩🇪',
