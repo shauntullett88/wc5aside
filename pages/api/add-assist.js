@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     const { data: existingPlayer } = await supabase
       .from('player_stats')
       .select('*')
-      .eq('id', playerId)
+      .eq('id', String(playerId))
       .maybeSingle();
 
     if (existingPlayer) {
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
         .from('player_stats')
         .insert([
           {
-            id: playerId,
+            id: String(playerId),
             goals: 0,
             assists: 1
           }
