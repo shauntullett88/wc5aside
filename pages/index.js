@@ -14,89 +14,52 @@ const MAX_PLAYERS = 6;
 export default function SelectionPage() {
   const { dark } = useTheme();
 
-  const [step, setStep] = useState('name');
+  const [step, setStep] = useState('pick');
   const [username, setUsername] = useState('');
-  const [usernameError, setUsernameError] = useState('');
-  const [checkingUser, setCheckingUser] = useState(false);
 
   const [allPlayers, setAllPlayers] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadError, setLoadError] = useState('');
-
   const [selected, setSelected] = useState([]);
+
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [lockedTeam, setLockedTeam] = useState(null);
 
   const fetchPlayers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/players');
-      const data = await res.json();
-      const players = data.players || [];
-
-      setAllPlayers(players);
-      setTeams([...new Set(players.map(p => p.team))]);
-
-    } catch (err) {
-      setLoadError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    const res = await fetch('/api/players');
+    const data = await res.json();
+    setAllPlayers(data.players || []);
   }, []);
 
   useEffect(() => {
-    if (step === 'pick') fetchPlayers();
-  }, [step]);
+    fetchPlayers();
+  }, []);
 
   function togglePlayer(player) {
     setSelected(prev => {
       const exists = prev.find(p => p.id === player.id);
-
       if (exists) return prev.filter(p => p.id !== player.id);
-
       if (prev.length >= MAX_PLAYERS) return prev;
-
       return [...prev, player];
     });
   }
 
-  // ✅ ✅ FIXED FUNCTION
+  // ✅ ✅ FIXED HERE (ONLY CHANGE)
   async function handleLockIn() {
-
-    // ✅ FIX: ensure exactly 6 players
     if (selected.length !== MAX_PLAYERS) {
       setSubmitError(`You must pick exactly ${MAX_PLAYERS} players`);
       return;
     }
 
-    if (typeof window !== 'undefined' && localStorage.getItem('teamLocked')) {
-      alert('You have already created a team!');
-      return;
-    }
-
     setSubmitting(true);
-    setSubmitError('');
 
     try {
-      const res = await fetch('/api/teams', {
+      await fetch('/api/teams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, playerIds: selected.map(p => p.id) }),
+        body: JSON.stringify({ playerIds: selected.map(p => p.id) }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error);
-
-      localStorage.setItem('teamLocked', 'true');
-
-      setLockedTeam(data);
-      setStep('locked');
-
     } catch (err) {
-      setSubmitError(err.message);
+      setSubmitError('Failed to lock team');
     } finally {
       setSubmitting(false);
     }
@@ -108,59 +71,40 @@ export default function SelectionPage() {
         <title>Pick Team</title>
       </Head>
 
-      <main>
+      <main style={{ padding: 20 }}>
+        <h2>{selected.length}/6 selected</h2>
 
-        {step === 'pick' && (
-          <>
-            <h2>{selected.length}/6 selected</h2>
-
-            {allPlayers.map(player => (
-              <PlayerCard
-                key={player.id}
-                player={player}
-                selected={selected.some(p => p.id === player.id)}
-                onClick={() => togglePlayer(player)}
-              />
-            ))}
-
-            <button
-              onClick={() => {
-                if (selected.length !== MAX_PLAYERS) {
-                  alert(`Pick exactly ${MAX_PLAYERS} players`);
-                  return;
-                }
-                setStep('confirm');
-              }}
-            >
-              Lock In
+        {allPlayers.map(p => (
+          <div key={p.id}>
+            <button onClick={() => togglePlayer(p)}>
+              {p.name}
             </button>
-          </>
-        )}
+          </div>
+        ))}
+
+        <button
+          onClick={() => {
+            if (selected.length !== MAX_PLAYERS) {
+              alert(`Pick exactly ${MAX_PLAYERS} players`);
+              return;
+            }
+            setStep('confirm');
+          }}
+        >
+          Lock In
+        </button>
 
         {step === 'confirm' && (
           <div>
-            <h2>Confirm Team</h2>
-
-            {selected.map(p => (
-              <div key={p.id}>{p.name}</div>
-            ))}
+            <h3>Confirm</h3>
 
             {submitError && <p>{submitError}</p>}
 
-            <button onClick={() => setStep('pick')}>
-              Back
-            </button>
-
-            {/* ✅ FIXED BUTTON */}
-            <button
-              onClick={handleLockIn}
-              disabled={submitting}
-            >
-              {submitting ? 'Locking in...' : 'Confirm'}
+            <button onClick={handleLockIn} disabled={submitting}>
+              {submitting ? 'Locking...' : 'Confirm'}
             </button>
           </div>
         )}
-
       </main>
     </>
   );
