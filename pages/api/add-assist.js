@@ -2,7 +2,7 @@ import { supabase } from '../../lib/supabase';
 
 export default async function handler(req, res) {
   try {
-    const { playerId } = req.body;
+    const { playerId, name, team, position } = req.body;
 
     if (!playerId) {
       return res.status(400).json({ error: 'Missing playerId' });
@@ -25,8 +25,11 @@ export default async function handler(req, res) {
         const { data, error } = await supabase
           .from('teams')
           .update({
-            totalAssists: (team.totalAssists || 0) + 1
-          })
+  goals: (existingPlayer.goals || 0) + 1,
+  name,
+  team,
+  position
+})
           .eq('id', team.id)
           .select()
           .single();
@@ -68,10 +71,13 @@ export default async function handler(req, res) {
       const { error: insertError } = await supabase
         .from('player_stats')
         .insert([{
-          id: String(playerId),
-          goals: 0,
-          assists: 1
-        }]);
+  id: String(playerId),
+  name,
+  team,
+  position,
+  goals: 1,
+  assists: 0
+}]);
 
       if (insertError) {
         console.error("INSERT ERROR:", insertError);

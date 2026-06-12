@@ -13,7 +13,12 @@ export default function AdminPage() {
     await fetch('/api/add-goal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({
+  playerId,
+  name: player.name,
+  team: player.team,
+  position: player.position
+}),
     });
 
     alert("Goal added ✅");
