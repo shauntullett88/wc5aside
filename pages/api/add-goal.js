@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
     let updatedTeams = [];
 
-    // ✅ Update team goals
+    // Update team goals
     for (const team of teams || []) {
       if (team.player_ids.map(id => Number(id)).includes(playerId)) {
         const { data, error } = await supabase
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
     console.log("Updating player_stats (goal) for:", playerId);
 
-    // ✅ FIXED player_stats logic
+    // player_stats logic
     const { data: existingPlayer, error: fetchError } = await supabase
       .from('player_stats')
       .select('*')
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
         .update({
           goals: (existingPlayer.goals || 0) + 1
         })
-        .eq('id', String(playerId)); ✅ FIX
+        .eq('id', String(playerId));
 
       if (updateError) {
         console.error("UPDATE ERROR:", updateError);

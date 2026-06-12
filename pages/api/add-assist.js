@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing playerId' });
     }
 
-    // ✅ Get teams
+    // Get teams
     const { data: teams, error: teamsError } = await supabase
       .from('teams')
       .select('*');
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
     let updates = [];
 
-    // ✅ Update team assists
+    // Update team assists
     for (const team of teams || []) {
       if (team.player_ids.map(id => Number(id)).includes(playerId)) {
         const { data, error } = await supabase
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
     console.log("Updating player_stats for:", playerId);
 
-    // ✅ FIXED: player_stats logic
+    // player_stats logic
     const { data: existingPlayer, error: fetchError } = await supabase
       .from('player_stats')
       .select('*')
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
         .update({
           assists: (existingPlayer.assists || 0) + 1
         })
-        .eq('id', String(playerId)); ✅ FIX
+        .eq('id', String(playerId));
 
       if (updateError) {
         console.error("UPDATE ERROR:", updateError);
