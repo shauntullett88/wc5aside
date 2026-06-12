@@ -9,30 +9,36 @@ export default function AdminPage() {
       .then(data => setPlayers(data.players || []));
   }, []);
 
-  async function addGoal(playerId) {
+  // ✅ FIXED: now takes full player
+  async function addGoal(player) {
     await fetch('/api/add-goal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-  playerId,
-  name: player.name,
-  team: player.team,
-  position: player.position
-}),
+        playerId: player.id,
+        name: player.name,
+        team: player.team,
+        position: player.position
+      }),
     });
 
-    alert("Goal added ✅");
+    alert(player.name + " goal added ✅");
   }
 
-  // ✅ NEW: Assist function
-  async function addAssist(playerId) {
+  // ✅ FIXED: also pass full player object
+  async function addAssist(player) {
     await fetch('/api/add-assist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId }),
+      body: JSON.stringify({
+        playerId: player.id,
+        name: player.name,
+        team: player.team,
+        position: player.position
+      }),
     });
 
-    alert("Assist added ✅");
+    alert(player.name + " assist added ✅");
   }
 
   return (
@@ -45,15 +51,15 @@ export default function AdminPage() {
 
           {/* ✅ Goal button */}
           <button
-            onClick={() => addGoal(player.id)}
+            onClick={() => addGoal(player)}  // ✅ FIXED
             style={{ marginLeft: 10 }}
           >
             ⚽ Goal
           </button>
 
-          {/* ✅ Assist button (NEW) */}
+          {/* ✅ Assist button */}
           <button
-            onClick={() => addAssist(player.id)}
+            onClick={() => addAssist(player)} // ✅ FIXED
             style={{ marginLeft: 5 }}
           >
             🅰️ Assist
