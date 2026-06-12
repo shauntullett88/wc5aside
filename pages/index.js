@@ -111,14 +111,42 @@ setTeams(uniqueTeams);
   }
 
   // ── Toggle player selection ────────────────────────────────────────────────
-  function togglePlayer(player) {
-    setSelected(prev => {
-      const already = prev.find(p => p.id === player.id);
-      if (already) return prev.filter(p => p.id !== player.id);
-      if (prev.length >= MAX_PLAYERS) return prev; // at limit
-      return [...prev, player];
-    });
-  }
+function togglePlayer(player) {
+  setSelected(prev => {
+    const already = prev.find(p => p.id === player.id);
+
+    // ✅ Remove player if already selected
+    if (already) return prev.filter(p => p.id !== player.id);
+
+    // ✅ Max 6 players
+    if (prev.length >= 6) return prev;
+
+    // ✅ Count positions
+    const midfielders = prev.filter(p => p.position === "Midfielder").length;
+    const forwards = prev.filter(p => p.position === "Forward").length;
+
+    // ✅ Count players from same team
+    const sameTeamCount = prev.filter(p => p.team === player.team).length;
+
+    // ✅ Enforce rules
+    if (player.position === "Midfielder" && midfielders >= 3) {
+      alert("You can only select max 3 midfielders");
+      return prev;
+    }
+
+    if (player.position === "Forward" && forwards >= 3) {
+      alert("You can only select max 3 forwards");
+      return prev;
+    }
+
+    if (sameTeamCount >= 2) {
+      alert("You can only select max 2 players from the same team");
+      return prev;
+    }
+
+    return [...prev, player];
+  });
+}
 
   // ── Lock-in flow ───────────────────────────────────────────────────────────
   async function handleLockIn() {
