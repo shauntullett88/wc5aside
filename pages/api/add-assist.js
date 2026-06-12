@@ -39,6 +39,7 @@ export default async function handler(req, res) {
         updates.push(data);
       }
     }
+console.log("Updating player_stats for:", playerId);
 
     // ✅ NEW: update player_stats (for top players leaderboard)
     const { data: existingPlayer } = await supabase
