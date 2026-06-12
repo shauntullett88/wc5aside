@@ -45,8 +45,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid username' });
     }
 
-    if (!Array.isArray(playerIds) || playerIds.length !== 5) {
-      return res.status(400).json({ error: 'Pick exactly 5 players' });
+    if (!Array.isArray(playerIds) || playerIds.length !== 6) {
+      return res.status(400).json({ error: 'Pick exactly 6 players' });
     }
 
     // ✅ Check if username already exists
