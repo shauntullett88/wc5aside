@@ -402,7 +402,14 @@ function togglePlayer(player) {
 
                     {/* Lock button */}
                     <button
-                      onClick={() => setStep('confirm')}
+                      onClick={() => {
+  if (selected.length !== MAX_PLAYERS) {
+    alert(`Pick exactly ${MAX_PLAYERS} players`);
+    return;
+  }
+  setStep('confirm');
+}}
+
                       disabled={selected.length !== MAX_PLAYERS}
                       className="mt-4 w-full py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all text-sm"
                     >
@@ -464,6 +471,10 @@ function togglePlayer(player) {
                   </button>
                   <button
                     onClick={handleLockIn}
+if (selected.length !== MAX_PLAYERS) {
+  setSubmitError(`You must pick exactly ${MAX_PLAYERS} players`);
+  return;
+}
                     disabled={submitting}
                     className="flex-1 py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white font-bold rounded-xl transition-all text-sm"
                   >
