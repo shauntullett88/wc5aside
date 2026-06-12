@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing playerId' });
     }
 
-    // ✅ Get all teams
+    // ✅ Get teams
     const { data: teams, error: teamsError } = await supabase
       .from('teams')
       .select('*');
@@ -22,7 +22,6 @@ export default async function handler(req, res) {
     // ✅ Update team assists
     for (const team of teams || []) {
       if (team.player_ids.map(id => Number(id)).includes(playerId)) {
-
         const { data, error } = await supabase
           .from('teams')
           .update({
@@ -33,38 +32,50 @@ export default async function handler(req, res) {
           .single();
 
         if (error) {
-          return res.status(500).json({ error: error.message });
+          console.error("TEAM UPDATE ERROR:", error);
         }
 
         updates.push(data);
       }
     }
-console.log("Updating player_stats for:", playerId);
 
-    // ✅ NEW: update player_stats (for top players leaderboard)
-    const { data: existingPlayer } = await supabase
+    console.log("Updating player_stats for:", playerId);
+
+    // ✅ FIXED: player_stats logic
+    const { data: existingPlayer, error: fetchError } = await supabase
       .from('player_stats')
       .select('*')
       .eq('id', String(playerId))
       .maybeSingle();
 
+    if (fetchError) {
+      console.error("FETCH ERROR:", fetchError);
+    }
+
     if (existingPlayer) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('player_stats')
         .update({
           assists: (existingPlayer.assists || 0) + 1
         })
-        .eq('id', playerId);
+        .eq('id', String(playerId)); ✅ FIX
+
+      if (updateError) {
+        console.error("UPDATE ERROR:", updateError);
+      }
+
     } else {
-      await supabase
+      const { error: insertError } = await supabase
         .from('player_stats')
-        .insert([
-          {
-            id: String(playerId),
-            goals: 0,
-            assists: 1
-          }
-        ]);
+        .insert([{
+          id: String(playerId),
+          goals: 0,
+          assists: 1
+        }]);
+
+      if (insertError) {
+        console.error("INSERT ERROR:", insertError);
+      }
     }
 
     return res.status(200).json({
@@ -73,6 +84,7 @@ console.log("Updating player_stats for:", playerId);
     });
 
   } catch (err) {
+    console.error("SERVER ERROR:", err);
     return res.status(500).json({ error: err.message });
   }
 }
