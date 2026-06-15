@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing playerId' });
     }
 
-    // ✅ Get teams
+    // Get teams
     const { data: teams, error: teamsError } = await supabase
       .from('teams')
       .select('*');
@@ -19,14 +19,14 @@ export default async function handler(req, res) {
 
     let updates = [];
 
-    // ✅ Update team assists
+    // Update team assists
     for (const teamRow of teams || []) {
       if (teamRow.player_ids.map(id => Number(id)).includes(playerId)) {
 
         const { data, error } = await supabase
           .from('teams')
           .update({
-            totalAssists: (teamRow.totalAssists || 0) + 1 ✅
+            totalAssists: (teamRow.totalAssists || 0) + 1
           })
           .eq('id', teamRow.id)
           .select()
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // ✅ player_stats logic
+    // player_stats logic
     const { data: existingPlayer, error: fetchError } = await supabase
       .from('player_stats')
       .select('*')
@@ -74,8 +74,8 @@ export default async function handler(req, res) {
           name,
           team,
           position,
-          goals: 0, ✅
-          assists: 1 ✅
+          goals: 0,
+          assists: 1
         }]);
 
       if (insertError) {
