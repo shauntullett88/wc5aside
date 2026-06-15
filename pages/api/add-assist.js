@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing playerId' });
     }
 
-    // Get teams
+    // ✅ Get teams
     const { data: teams, error: teamsError } = await supabase
       .from('teams')
       .select('*');
@@ -19,18 +19,16 @@ export default async function handler(req, res) {
 
     let updates = [];
 
-    // Update team assists
-    for (const team of teams || []) {
-      if (team.player_ids.map(id => Number(id)).includes(playerId)) {
+    // ✅ Update team assists
+    for (const teamRow of teams || []) {
+      if (teamRow.player_ids.map(id => Number(id)).includes(playerId)) {
+
         const { data, error } = await supabase
           .from('teams')
           .update({
-  goals: (existingPlayer.goals || 0) + 1,
-  name,
-  team,
-  position
-})
-          .eq('id', team.id)
+            totalAssists: (teamRow.totalAssists || 0) + 1 ✅
+          })
+          .eq('id', teamRow.id)
           .select()
           .single();
 
@@ -42,9 +40,7 @@ export default async function handler(req, res) {
       }
     }
 
-    console.log("Updating player_stats for:", playerId);
-
-    // player_stats logic
+    // ✅ player_stats logic
     const { data: existingPlayer, error: fetchError } = await supabase
       .from('player_stats')
       .select('*')
@@ -59,11 +55,11 @@ export default async function handler(req, res) {
       const { error: updateError } = await supabase
         .from('player_stats')
         .update({
-  assists: (existingPlayer.assists || 0) + 1,
-  name,
-  team,
-  position
-})
+          assists: (existingPlayer.assists || 0) + 1,
+          name,
+          team,
+          position
+        })
         .eq('id', String(playerId));
 
       if (updateError) {
@@ -74,13 +70,13 @@ export default async function handler(req, res) {
       const { error: insertError } = await supabase
         .from('player_stats')
         .insert([{
-  id: String(playerId),
-  name,
-  team,
-  position,
-  goals: 1,
-  assists: 0
-}]);
+          id: String(playerId),
+          name,
+          team,
+          position,
+          goals: 0, ✅
+          assists: 1 ✅
+        }]);
 
       if (insertError) {
         console.error("INSERT ERROR:", insertError);
