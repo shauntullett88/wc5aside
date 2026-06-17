@@ -122,10 +122,10 @@ export default function LeaderboardPage() {
             )}
           </div>
 
-          {/* ✅ TOP PLAYERS */}
+          {/* ✅ TOP 5 PLAYERS */}
           <div>
             <h2 className="text-2xl font-bold mb-4">
-              🔥 Top Players
+              🔥 Top 5 Players
             </h2>
 
             {players.length === 0 && <p>No player stats yet</p>}
